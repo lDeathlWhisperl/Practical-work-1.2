@@ -23,9 +23,9 @@ int main()
 
     do
     {
-        quicksort(sorted, SIZE); //и это тоже
         cleanScreen();
 
+        cout << "[x] Выход\n\n";
         for (int i = 1; i <= 8; i++)
         {
             cout << "[" << i << "] Задание №" << i;
@@ -158,13 +158,14 @@ int main()
 
             pause();
             break;
+        case 'x':
+        case 'х':
+        case 'X':
+        case 'Х':
+            exit = 'x';
+            break;
         }
 
-        cleanScreen();
-        cout << "Введите х для выхода или любой другой символ для продолжения ";
-        cin >> exit;
-        cin.sync();
-
-    } while (exit != 'x' && exit != 'X');
+    } while (exit != 'x');
     return 0;
 }
