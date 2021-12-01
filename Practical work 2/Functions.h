@@ -28,6 +28,7 @@ void findMaxMin(int*, const int, int&, int&);
 
 void arrOutput(int*, const int, int num1 = -1, int num2 = -1);
 
+
 void pause();
 
 void cleanScreen();

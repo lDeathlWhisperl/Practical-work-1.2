@@ -93,6 +93,7 @@ void arrOutput(int* arr, const int SIZE, int num1, int num2)
     }
 }
 
+
 void pause()
 {
     cout << "\n\n";
