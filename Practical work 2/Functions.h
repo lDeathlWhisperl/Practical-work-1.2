@@ -15,6 +15,7 @@ void task7(int*, const int, int);
 
 void task8(int*, const int);
 
+
 int  getRandomNumber(int, int);
 
 int  binarySearch(int, int*, const int, int&, int&);
