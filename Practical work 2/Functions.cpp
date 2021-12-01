@@ -1,9 +1,16 @@
 #include <iostream>
-#include "Functions.h"
+#include <cstdlib>
+#include <time.h>
 #include <chrono>
+#include "Functions.h"
 
 using namespace std;
 using namespace chrono;
+
+int getRandomNumber(int min, int max)
+{
+    return min + rand() % (max - min + 1);
+}
 
 void quicksort(int* arr, const int SIZE)
 {
@@ -38,21 +45,22 @@ void quicksort(int* arr, const int SIZE)
 void findMaxMin(int* arr, const int SIZE, int& max, int& min)
 {
     for (int i = 0; i < SIZE; i++)
+    {
         if (arr[i] > max)
             max = arr[i];
-
-    for (int i = 0; i < SIZE; i++)
         if (arr[i] < min)
             min = arr[i];
+    }
 }
 
-void binarySearch(int search, int* arr, const int SIZE, int& left, int& right)
+int binarySearch(int search, int* arr, const int SIZE, int& left, int& right)
 {
     while (left < right)
     {
         int mid = left + (right - left) / 2;
         search <= arr[mid] ? right = mid : left = mid + 1;
     }
+    return right;
 }
 
 int commonSearch(int search, int* arr, const int SIZE)
@@ -66,7 +74,7 @@ int commonSearch(int search, int* arr, const int SIZE)
 void arrOutput(int* arr, const int SIZE, int num1, int num2)
 {
     int count = 0;
-    std::cout << "\nМассив выглядит сейчас так:\n\n";
+    std::cout << "\nThe array looks like this now:\n\n";
     for (int i = 0; i < SIZE; i++)
     {
         count++;
@@ -101,10 +109,12 @@ void cleanScreen()
 
 void task1(int* sorted, int* unsorted, const int SIZE)
 {
+    srand(static_cast<unsigned int>(time(0)));
+
     for (int i = 0; i < SIZE; i++)
     {
-        *(sorted + i) = -99 + rand() % 199; //Случайное число от -99 до 99
-        *(unsorted + i) = *(sorted + i);
+        sorted[i] = getRandomNumber(-99, 99);
+        unsorted[i] = sorted[i];
     }
 }
 
@@ -113,54 +123,54 @@ void task2(int* sorted, const int SIZE)
     auto begin = steady_clock::now();
     quicksort(sorted, SIZE);
     auto end = steady_clock::now();
-    auto nano = duration_cast<nanoseconds>(end - begin);
 
     arrOutput(sorted, SIZE);
 
-    cout << "\n\nОтсортировано за : " << nano.count() << " наносекунд\n\n"; \
+    cout << "\n\nSorted in : " << duration_cast<nanoseconds>(end - begin).count() << " nanoseconds\n\n"; \
 }
 
 void task3(int* sorted, int* unsorted, const int SIZE)
 {
+    arrOutput(sorted, SIZE);
+
     int max = -100,
         min = 100;
 
-    cout << "\n\nВ неотсортированном масиве:\n";
+    cout << "\n\nIn unsorted array:\n";
 
     auto begin = steady_clock::now();
     findMaxMin(unsorted, SIZE, max, min);
     auto end = steady_clock::now();
-    auto nano = duration_cast<nanoseconds>(end - begin);
 
-    cout << "    Максимальное значение: " << max << " Минимальное значение: " << min
-        << "\n    Найдено за: " << nano.count() << " наносекунд\n\n"
-        << "В отсортированном масиве:\n";
+    cout << "    Max value: " << max << " Min value: " << min
+       << "\n    Found in: " << duration_cast<nanoseconds>(end - begin).count() << " nanoseconds\n\n"
+        << "In sorted array:\n";
 
     begin = steady_clock::now();
-    max = *(sorted + (SIZE - 1)), min = *sorted;
+    max = sorted[SIZE-1], min = *sorted;
     end = steady_clock::now();
-    nano = duration_cast<nanoseconds>(end - begin);
 
-    cout << "    Максимальное значение: " << max << " Минимальное значение: " << min
-        << "\n    Hайдено за: " << nano.count() << " наносекунд\n\n";
+    cout << "    Max value: " << max << " Min value: " << min
+       << "\n    Found in: " << duration_cast<nanoseconds>(end - begin).count() << " nanoseconds\n\n";
 }
 
 void task4(int* sorted, const int SIZE)
 {
-    int   mid = (*sorted + *(sorted + (SIZE - 1))) / 2,
-        count = 0;
+    arrOutput(sorted, SIZE);
 
-    int right = SIZE - 1,
-        left = 0,
-        index;
-    binarySearch(mid, sorted, SIZE, left, right);
-    index = right;
+    cout << "\n\nIndexes of elements equal to " << '(' << *sorted << " + " << sorted[SIZE - 1] << ") / 2 = " << (*sorted + sorted[SIZE - 1]) / 2 << ": ";
+
+    int   mid = (*sorted + sorted[SIZE-1]) / 2,
+        count = 0,
+        right = SIZE - 1,
+         left = 0, 
+        index = binarySearch(mid, sorted, SIZE, left, right);
 
     for (int i = index - 5; i < index + 5; i++)
     {
-        if (*(sorted + i) > *(sorted + index))
+        if (sorted[i] > sorted[index])
             break;
-        else if (*(sorted + i) == mid)
+        else if (sorted[i] == mid)
         {
             cout << i << ' ';
             count++;
@@ -168,141 +178,99 @@ void task4(int* sorted, const int SIZE)
     }
 
     if (count != 0)
-        cout << "\n    и их количество: " << count << "\n\n";
+        cout << "\n    and their count: " << count << "\n\n";
     else
-        cout << "\n    таких чисел нет";
+        cout << "\n    There are no such numbers";
 }
 
 void task5(int* sorted, const int SIZE, int userNum)
 {
     int count = 0;
 
-    cout << "    Числа, которые меньше, чем " << userNum << ": ";
+    cout << "    Numbers which less than " << userNum << ": ";
 
     for (int i = 0; i < SIZE; i++)
     {
-        if (*(sorted + i) >= userNum)
+        if (sorted[i] >= userNum)
             break;
-        cout << *(sorted + i) << ' ';
+        cout << sorted[i] << ' ';
         count++;
     }
 
     if (count == 0)
-        cout << "Таких чисел нет";
+        cout << "There are no such numbers";
 }
 
 void task6(int* sorted, const int SIZE, int userNum)
 {
     int count = 0;
 
-    cout << "    Числа, которые больше, чем " << userNum << ": ";
+    cout << "    Numbers which bigger than " << userNum << ": ";
 
     for (int i = SIZE - 1; i >= 0; i--)
     {
-        if (*(sorted + i) <= userNum)
+        if (sorted[i] <= userNum)
             break;
-        cout << *(sorted + i) << ' ';
+        cout << sorted[i] << ' ';
         count++;
     }
 
     if (count == 0)
-        cout << "Таких чисел нет";
+        cout << "There are no such numbers";
 }
 
 void task7(int* sorted, const int SIZE, int userNum)
 {
     int right = SIZE - 1,
-        left = 0;
+         left = 0;
 
-    cout << "\n    Бинарный поиск: \n";
+    cout << "\n    Binary search: \n";
+
     auto begin = steady_clock::now();
-    binarySearch(userNum, sorted, SIZE, left, right);
-    auto end = steady_clock::now();
-    auto nano = duration_cast<nanoseconds>(end - begin);
+    int index  =  binarySearch(userNum, sorted, SIZE, left, right);
+    auto end   = steady_clock::now();
 
-    if (*(sorted + right) == userNum)
-        cout << "        Найденое число находится под индексом " << right;
+    if (sorted[index] == userNum)
+        cout << "        The found number is under the index " << index;
     else
-        cout << "        Таких чисел нет";
+        cout << "        There are no such numbers";
 
-    cout << "\n        Hайдено за: " << nano.count() << " наносекунд\n\n";
+    cout << "\n        Found in: " << duration_cast<nanoseconds>(end - begin).count() << " nanoseconds\n\n";
 
-    cout << "    Обычный поиск: \n";
+    cout << "    Common search: \n";
+
     begin = steady_clock::now();
-    int index = commonSearch(userNum, sorted, SIZE);
-    end = steady_clock::now();
-    nano = duration_cast<nanoseconds>(end - begin);
+    index = commonSearch(userNum, sorted, SIZE);
+    end   = steady_clock::now();
 
     if (index >= 0)
-        cout << "        Найденое число находится под индексом " << right << '\n';
+        cout << "        The found number is under the index " << index << '\n';
     else
-        cout << "        Таких чисел нет\n";
+        cout << "        There are no such numbers\n";
 
-    cout << "        Найдено за: " << nano.count() << " наносекунд\n\n";
+    cout << "        Found in: " << duration_cast<nanoseconds>(end - begin).count() << " nanoseconds\n\n";
 }
 
 void task8(int* sorted, const int SIZE)
 {
-    int num1,
-        num2;
+    arrOutput(sorted, SIZE);
 
-    try
+    cout << "\n\nWhich two elements should be swapped?\n";
+
+    int num1, num2;
+
+    cin >> num1 >> num2;
+    cin.sync();
+    while (num1 < 0 || num1 > 99 || num2 < 0 || num2 > 99 || num1 == num2)
     {
+        cout << "\nYou have intered numbers which are go beyond of the array or equal to each other, try again\n";
         cin >> num1 >> num2;
-        cin.sync();
-        if (num1 < 0 || num1 > 99 || num2 < 0 || num2 > 99 || num1 == num2)
-            throw - 1;
-    }
-    catch (int e)
-    {
-        while (num1 < 0 || num1 > 99 || num2 < 0 || num2 > 99 || num1 == num2)
-        {
-            cout << "\nВы ввели значения либо выходящие за пределы массива, либо равные друг другу, попробуйте еще раз\n";
-            cin >> num1 >> num2;
-        }
     }
 
     auto begin = steady_clock::now();
     swap(sorted[num1], sorted[num2]);
     auto end = steady_clock::now();
-    auto nano = duration_cast<nanoseconds>(end - begin);
 
-    cout << "\nЭлементы заменены за: " << nano.count() << " наносекунд\n\n";
+    cout << "\nElements swapped in: " << duration_cast<nanoseconds>(end - begin).count() << " nanoseconds\n\n";
     arrOutput(sorted, SIZE, num1, num2);
-}
-
-void bonus(int* unsorted)
-{
-    const int MAX = 50;
-    int arr1[MAX], arr2[MAX], count = 0;
-
-    for (int i = 0; i < MAX; i++)
-    {
-        arr1[i] = *(unsorted + i);
-        arr2[i] = *(unsorted + (i + 50));
-    }
-
-    for (int i = 0; i < MAX; i++)
-    {
-        if (*(arr1 + i) % 2 != 0)
-            for (int j = 0; j < MAX; j++)
-                if (*(arr2 + j) % 2 == 0)
-                {
-                    int temp = arr1[i];
-                    arr1[i] = arr2[j];
-                    arr2[j] = temp;
-                    break;
-                }
-    }
-
-    for (int i = 0; i < MAX; i++)
-        if (arr2[i] % 2 != 0)
-            *(arr2 + i) -= 1;
-
-    for (int i = 0; i < MAX; i++)
-        if (arr1[i] > arr2[i])
-        {
-            count++;
-        }
-    cout << "\n\nКоличество элементов, которые больше в первом массиве, чем во втором: " << count;
 }
